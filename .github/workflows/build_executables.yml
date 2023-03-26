@@ -47,4 +47,4 @@ jobs:
         with:
           name: ${{ matrix.artifact-name }}
           path: |
-            dist/gui
+            dist/long_to_short_app
