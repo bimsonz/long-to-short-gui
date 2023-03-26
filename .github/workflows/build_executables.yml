@@ -40,7 +40,7 @@ jobs:
       - name: Build standalone executable
         run: |
           pip3 install pyinstaller
-          pyinstaller --onefile --noconsole gui.py
+          pyinstaller --onefile --noconsole long_to_short_app.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
