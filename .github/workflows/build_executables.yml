@@ -1,43 +1,53 @@
-name: Build Standalone Executable
+name: Build Executables
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build-executable:
-    runs-on: ${{ matrix.os }}
+  build:
+    runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            python-version: 3.9
+            artifact-name: long-to-short-gui-linux
+
+          - os: windows-latest
+            python-version: 3.9
+            artifact-name: long-to-short-gui-windows
+
+          - os: macos-latest
+            python-version: 3.9
+            artifact-name: long-to-short-gui-macos
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.x
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install long-to-short-cli
-
-      - name: Install PyInstaller
-        run: pip install pyinstaller
+          pip3 install -r requirements.txt
 
       - name: Build standalone executable
-        run: pyinstaller --onefile gui.py
+        run: |
+          pip3 install pyinstaller
+          pyinstaller --onefile --noconsole gui.py
 
-      - name: Upload artifacts
+      - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.os }}-executable
-          path: dist/
+          name: ${{ matrix.artifact-name }}
+          path: |
+            dist/gui
